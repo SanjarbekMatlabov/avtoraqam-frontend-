@@ -136,6 +136,7 @@ loginForm.addEventListener("submit", async (e) => {
 // Logout funksiyasi
 logoutButton.addEventListener("click", () => {
   if (confirm("Tizimdan chiqishni xohlaysizmi?")) {
+    header.style.display = "none";
     clearToken();
     location.reload();
   }
@@ -410,6 +411,7 @@ showLogin.addEventListener("click", () => {
 
 // Ilova boshlanishi
 (async function initApp() {
+  header.style.display = "none";
   if (getToken()) {
     showLoading(platesLoading); // Dastlabki yuklashda platesLoading ishlatiladi
     try {
@@ -417,6 +419,7 @@ showLogin.addEventListener("click", () => {
       authSection.style.display = "none";
       platesSection.style.display = "grid";
       logoutButton.style.display = "block";
+      header.style.display = "flex";
       if (isStaff) staffSection.style.display = "block";
       await loadPlates();
     } finally {
