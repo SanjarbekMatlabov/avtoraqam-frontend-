@@ -165,7 +165,7 @@ async function loadPlates(query = "") {
           <div class="plate-image">${plate.plate_number}</div>
           <p>№ ${plate.id}</p>
           <p>Muddati ${plate.deadline}</p>
-          <p>Joriy narx: ${plate.highest_bid || 0} so'm</p>
+          <p>Joriy narx: ${new Intl.NumberFormat('uz-UZ').format(plate.highest_bid || 0)} so'm</p>
           <button class="detail-btn">Batafsil</button>
         `;
         div.querySelector(".detail-btn").addEventListener("click", () => showPlateDetail(plate.id));
@@ -218,7 +218,7 @@ async function showPlateDetail(id) {
     bidsList.innerHTML = "";
     plate.bids.forEach((bid) => {
       const li = document.createElement("li");
-      li.textContent = `${bid.amount} so'm - Foydalanuvchi: ${bid.user_id} - ${new Date(bid.created_at).toLocaleString()}`;
+      li.textContent = `${new Intl.NumberFormat('uz-UZ').format(bid.amount)} so'm - Foydalanuvchi: ${bid.user_id} - ${new Date(bid.created_at).toLocaleString()}`;
       bidsList.appendChild(li);
     });
 
