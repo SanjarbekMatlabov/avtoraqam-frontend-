@@ -210,7 +210,7 @@ async function showPlateDetail(id) {
     }
 
     const plate = await apiRequest(`/plates/${id}/`);
-    document.getElementById("plate-title").textContent = plate.plate_number;
+    document.getElementById("plate-title").textContent = formatPlateNumber(plate.plate_number);
     document.getElementById("plate-description").textContent = plate.description || "Ta'rif mavjud emas";
 
     const countdownElement = document.getElementById("plate-countdown") || document.createElement("div");
