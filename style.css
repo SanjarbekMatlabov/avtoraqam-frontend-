@@ -139,14 +139,14 @@ a:hover {
 }
 
 /* Plates grid dizayni (bitta row’da 3 ta plate) */
-/* .plates-grid {
-  display: flex;
+#plates-list {
+  display: grid;
   grid-template-columns: repeat(3, 1fr); 
   gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px 0;
-} */
+}
 .plate-card {
   background: #ffffff;
   padding: 20px;
@@ -274,7 +274,7 @@ a:hover {
   background: #c0392b;
 }
 @media (max-width: 1024px) {
-  .plate-list {
+  #plates-list {
       grid-template-columns: repeat(2, 1fr); 
   }
 }
@@ -294,7 +294,7 @@ a:hover {
       width: 100%;
   }
 
-  .plate-list {
+  #plates-list {
     grid-template-columns: 1fr;
 }
 }
