@@ -144,7 +144,12 @@ logoutButton.addEventListener("click", () => {
     location.reload();
   }
 });
-
+function formatPlateNumber(plateNumber) {
+  if (plateNumber.length >= 3) {
+    return `${plateNumber.slice(0, 2)}|${plateNumber.slice(2)}`;
+  }
+  return plateNumber; // Agar raqam 3 belgidan kam bo‘lsa, o‘zgartirmasdan qaytarish
+}
 // Plitalarni yuklash (qidiruv bilan)
 async function loadPlates(query = "") {
   showLoading(platesLoading);
@@ -166,7 +171,7 @@ async function loadPlates(query = "") {
         const div = document.createElement("div");
         div.className = "plate-card";
         div.innerHTML = `
-          <div class="plate-image">${plate.plate_number}</div>
+          <div class="plate-image">${formatPlateNumber(plate.plate_number)}</div>
           <p>№ ${plate.id}</p>
           <p>Muddati ${plate.deadline}</p>
           <p>Joriy narx: ${new Intl.NumberFormat('uz-UZ').format(plate.highest_bid || 0)} so'm</p>
