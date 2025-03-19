@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avto Raqam Auksioni</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header qismi -->
+    <header id="header" style="display: none;">
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Raqam kiriting (masalan, A 123 EA)" />
+        <button id="search-button"><i class="fas fa-search"></i> Qidirish</button>
+      </div>
+      <button id="logout-button" style="display: none;">Chiqish</button>
+    </header>
+
+    <!-- Ro‘yxatdan o‘tish va kirish -->
+    <div id="auth-section">
+      <div id="register-section" style="display: none;">
+        <h2>Ro‘yxatdan o‘tish</h2>
+        <form id="register-form">
+          <input type="text" name="username" placeholder="Foydalanuvchi nomi" required />
+          <input type="email" name="email" placeholder="Email" required />
+          <input type="password" name="password" placeholder="Parol" required />
+          <button type="submit">Ro‘yxatdan o‘tish</button>
+        </form>
+        <div id="register-loading" class="loading" style="display: none;">
+          <div class="spinner"></div>
+          <p>Yuklanmoqda...</p>
+        </div>
+        <p id="register-error" class="error"></p>
+        <p>Hisobingiz bormi? <a href="#" id="show-login">Kirish</a></p>
+      </div>
+      <div id="login-section">
+        <h2>Kirish</h2>
+        <form id="login-form">
+          <input type="text" id="username" placeholder="Foydalanuvchi nomi" required />
+          <input type="password" id="password" placeholder="Parol" required />
+          <button type="submit">Kirish</button>
+        </form>
+        <div id="login-loading" class="loading" style="display: none;">
+          <div class="spinner"></div>
+          <p>Yuklanmoqda...</p>
+        </div>
+        <p id="login-error" class="error"></p>
+        <p>Hisobingiz yo‘qmi? <a href="#" id="show-register">Ro‘yxatdan o‘tish</a></p>
+      </div>
+    </div>
+
+    <!-- lot ro‘yxati -->
+    <div id="plates-section" class="plates-grid" style="display: none;">
+      <div id="plates-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div id="plates-loading" class="loading" style="display: none; grid-column: span 3;">
+          <div class="spinner"></div>
+          <p>Yuklanmoqda...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- lot detallari -->
+    <div id="plate-detail" style="display: none;">
+      <div id="detail-loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Yuklanmoqda...</p>
+      </div>
+      <h2 id="plate-title" style="font-size: 60px;"></h2>
+      <p id="plate-description"></p>
+      <p id="plate-deadline"></p>
+      <div class="countdown" id="countdown">
+        <div>
+          <div class="time-box" id="days">00</div>
+          <div class="label">Kun</div>
+        </div>
+        <div>
+          <div class="time-box" id="hours">00</div>
+          <div class="label">Soat</div>
+        </div>
+        <div>
+          <div class="time-box" id="minutes">00</div>
+          <div class="label">Daqiqa</div>
+        </div>
+        <div>
+          <div class="time-box" id="seconds">00</div>
+          <div class="label">Soniya</div>
+        </div>
+      </div>
+      <h3>Takliflar</h3>
+      <ul id="bids-list"></ul>
+      <form id="bid-form">
+        <input type="number" id="bid-amount" placeholder="Taklif miqdori" required />
+        <button type="submit">Taklif qo‘yish</button>
+      </form>
+      <div id="bid-loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Yuklanmoqda...</p>
+      </div>
+      <p id="bid-message"></p>
+      <button id="back-to-list">Orqaga</button>
+
+      <!-- Staff uchun harakatlar (faqat admin ko‘radi) -->
+      <div id="staff-actions" style="display: none;">
+        <h3>Admin Paneli</h3>
+        <form id="update-plate-form">
+          <input type="text" id="update-plate-number" placeholder="Yangi raqam" />
+          <input type="text" id="update-plate-description" placeholder="Yangi ta’rif" />
+          <input type="datetime-local" id="update-plate-deadline" />
+          <button type="submit">Yangilash</button>
+        </form>
+        <div id="update-loading" class="loading" style="display: none;">
+          <div class="spinner"></div>
+          <p>Yuklanmoqda...</p>
+        </div>
+        <button id="delete-plate-button">O‘chirish</button>
+        <p id="staff-action-error" class="error"></p>
+      </div>
+    </div>
+
+    <!-- Staff uchun faqat ko‘rinadigan plita yaratish bo‘limi -->
+    <div id="staff-section" style="display: none;">
+      <h2>Yangi lot qo‘shish</h2>
+      <form id="create-plate-form">
+        <input type="text" id="plate-number" placeholder="Avtoraqam raqami" required />
+        <input type="text" id="plate-description" placeholder="Ta’rif" required />
+        <input type="datetime-local" id="plate-deadline" required />
+        <button type="submit">Qo‘shish</button>
+      </form>
+      <div id="create-loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Yuklanmoqda...</p>
+      </div>
+      <p id="create-plate-error" class="error"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
