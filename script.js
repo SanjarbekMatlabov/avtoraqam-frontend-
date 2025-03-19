@@ -91,9 +91,11 @@ async function getUserInfo() {
   try {
     const user = await apiRequest("/users/me");
     isStaff = user.is_staff || false;
+    document.getElementById("current-username").textContent = user.username;
     return user;
   } catch {
     isStaff = false;
+    document.getElementById("current-username").textContent = "";
     return null;
   }
 }
@@ -138,6 +140,7 @@ logoutButton.addEventListener("click", () => {
   if (confirm("Tizimdan chiqishni xohlaysizmi?")) {
     header.style.display = "none";
     clearToken();
+    document.getElementById("current-username").textContent = "";
     location.reload();
   }
 });

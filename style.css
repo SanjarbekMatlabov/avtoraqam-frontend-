@@ -394,3 +394,21 @@ a:hover {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+#current-username {
+  margin-right: 10px; /* Tugma bilan masofa */
+  padding: 6px 12px; /* Ichki bo‘shliq */
+  background-color: #2980b9; /* Yashil fon (moslashtirish mumkin) */
+  color: white; /* Matn rangi */
+  font-weight: bold; /* Qalin shrift */
+  border-radius: 20px; /* Yumaloq burchaklar */
+  font-size: 14px; /* Matn o‘lchami */
+  display: inline-flex; /* Moslashuvchan joylashuv */
+  align-items: center; /* Vertikal markazlash */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Engil soya */
+  transition: all 0.3s ease; /* Hover effekti uchun silliq o‘tish */
+}
+
+#current-username:hover {
+  background-color: #45a049; /* Hover’da bir oz quyuqroq rang */
+  transform: scale(1.05); /* Hover’da biroz kattalashish */
+}
