@@ -1,9 +1,10 @@
-const API_URL = "https://uzex-backend.onrender.com";
+const API_URL = "https://uzex-backend.onrender.com"; // Backend porti
 let selectedPlateId = null;
 let isStaff = false;
 let countdownTimer;
-let socket = null;
-const plateSockets = {}; 
+let platesSocket = null; // Umumiy plitalar uchun WebSocket
+let bidSocket = null;    // Bidlar uchun WebSocket
+
 // Elementlarni olish
 const loginSection = document.getElementById("login-section");
 const header = document.getElementById("header");
@@ -101,6 +102,77 @@ async function getUserInfo() {
   }
 }
 
+// WebSocket ulanishlari
+function connectPlatesWebSocket() {
+  const token = getToken();
+  if (!token) return;
+
+  platesSocket = new WebSocket(`wss://uzex-backend.onrender.com/ws/plates/?token=${token}`);
+
+  platesSocket.onopen = () => {
+    console.log("Plates WebSocket ulandi");
+  };
+
+  platesSocket.onclose = () => {
+    console.log("Plates WebSocket uzildi, qayta ulanmoqda...");
+    setTimeout(connectPlatesWebSocket, 2000);
+  };
+
+  platesSocket.onerror = (error) => {
+    console.error("Plates WebSocket xatosi:", error);
+  };
+
+  platesSocket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "initial_plates" || data.type === "plate_created" || data.type === "plate_updated" || data.type === "plate_deleted") {
+      loadPlates(); // To‘liq ro‘yxatni yangilash
+    }
+  };
+}
+
+function connectBidWebSocket(plateId) {
+  const token = getToken();
+  if (!token) return;
+
+  bidSocket = new WebSocket(`wss://uzex-backend.onrender.com/ws/bids/${plateId}/?token=${token}`);
+
+  bidSocket.onopen = () => {
+    console.log(`Bid WebSocket ulandi: plate_id=${plateId}`);
+  };
+
+  bidSocket.onclose = () => {
+    console.log("Bid WebSocket uzildi");
+  };
+
+  bidSocket.onerror = (error) => {
+    console.error("Bid WebSocket xatosi:", error);
+  };
+
+  bidSocket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "initial" || data.type === "new_bid" || data.type === "bid_deleted") {
+      const bidsList = document.getElementById("bids-list");
+      bidsList.innerHTML = "";
+      data.bids.forEach((bid) => {
+        const li = document.createElement("li");
+        li.textContent = `${new Intl.NumberFormat('uz-UZ').format(bid.amount)} so'm - Foydalanuvchi: ${bid.user_id} - ${new Date(bid.created_at).toLocaleString()}`;
+        bidsList.appendChild(li);
+      });
+    }
+  };
+}
+
+function disconnectWebSockets() {
+  if (platesSocket) {
+    platesSocket.close();
+    platesSocket = null;
+  }
+  if (bidSocket) {
+    bidSocket.close();
+    bidSocket = null;
+  }
+}
+
 // Login jarayoni
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -129,6 +201,7 @@ loginForm.addEventListener("submit", async (e) => {
     header.style.display = "flex";
     if (isStaff) staffSection.style.display = "block";
     loadPlates();
+    connectPlatesWebSocket(); // Plitalar uchun WebSocket ulanishi
   } catch (err) {
     loginError.textContent = err.message || "Foydalanuvchi nomi yoki parol xato";
   } finally {
@@ -139,30 +212,25 @@ loginForm.addEventListener("submit", async (e) => {
 // Logout funksiyasi
 logoutButton.addEventListener("click", () => {
   if (confirm("Tizimdan chiqishni xohlaysizmi?")) {
+    disconnectWebSockets(); // WebSocket’ni yopish
     header.style.display = "none";
     clearToken();
     document.getElementById("current-username").textContent = "";
     location.reload();
   }
 });
+
 function formatPlateNumber(plateNumber) {
   if (plateNumber.length >= 3) {
     return `${plateNumber.slice(0, 2)}|${plateNumber.slice(2)}`;
   }
-  return plateNumber; // Agar raqam 3 belgidan kam bo‘lsa, o‘zgartirmasdan qaytarish
+  return plateNumber;
 }
+
 // Plitalarni yuklash (qidiruv bilan)
 async function loadPlates(query = "") {
   showLoading(platesLoading);
   try {
-    // Avvalgi WebSocket ulanishlarini yopish
-    Object.keys(plateSockets).forEach((plateId) => {
-      if (plateSockets[plateId]) {
-        plateSockets[plateId].close();
-        delete plateSockets[plateId];
-      }
-    });
-
     const url = query ? `/plates/search/?plate_number__contains=${encodeURIComponent(query)}` : "/plates/search/";
     console.log("API so‘rovi URL:", url);
 
@@ -179,48 +247,15 @@ async function loadPlates(query = "") {
       plateData.forEach((plate) => {
         const div = document.createElement("div");
         div.className = "plate-card";
-        div.id = `plate-card-${plate.id}`; // Har bir plita kartasi uchun unikal ID
         div.innerHTML = `
           <div class="plate-image">${formatPlateNumber(plate.plate_number)}</div>
           <p>№ ${plate.id}</p>
           <p>Muddati ${plate.deadline}</p>
-          <p class="highest-bid">Joriy narx: ${new Intl.NumberFormat('uz-UZ').format(plate.highest_bid || 0)} so'm</p>
+          <p>Joriy narx: ${new Intl.NumberFormat('uz-UZ').format(plate.highest_bid || 0)} so'm</p>
           <button class="detail-btn">Batafsil</button>
         `;
         div.querySelector(".detail-btn").addEventListener("click", () => showPlateDetail(plate.id));
         platesList.appendChild(div);
-
-        // WebSocket ulanishini boshlash
-        const wsUrl = `ws://uzex-backend.onrender.com//ws/bids/${plate.id}/`;
-        const socket = new WebSocket(wsUrl);
-        plateSockets[plate.id] = socket;
-
-        socket.onopen = () => {
-          console.log(`WebSocket ${plate.id} ID li plita uchun ulandi`);
-        };
-
-        socket.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          console.log(`WebSocketdan kelgan xabar (plate ${plate.id}):`, data);
-
-          if (data.type === "new_bid" || data.type === "bid_deleted") {
-            // Joriy narxni yangilash
-            const highestBidElement = div.querySelector(".highest-bid");
-            if (highestBidElement) {
-              const newHighestBid = data.type === "new_bid" ? data.highest_bid : data.new_highest_bid;
-              highestBidElement.textContent = `Joriy narx: ${new Intl.NumberFormat('uz-UZ').format(newHighestBid || 0)} so'm`;
-            }
-          }
-        };
-
-        socket.onerror = (error) => {
-          console.error(`WebSocket xatosi (plate ${plate.id}):`, error);
-        };
-
-        socket.onclose = () => {
-          console.log(`WebSocket ulanishi yopildi (plate ${plate.id})`);
-          delete plateSockets[plate.id];
-        };
       });
     }
   } catch (err) {
@@ -229,6 +264,16 @@ async function loadPlates(query = "") {
   } finally {
     hideLoading(platesLoading);
   }
+}
+
+if (!searchButton || !searchInput) {
+  console.error("Qidiruv elementlari topilmadi!");
+} else {
+  searchButton.addEventListener("click", () => {
+    const query = searchInput.value.trim();
+    console.log("Qidiruv so‘zi:", query);
+    loadPlates(query);
+  });
 }
 
 // Plita detallarini ko‘rsatish
@@ -276,48 +321,9 @@ async function showPlateDetail(id) {
     }
     bidMessage.textContent = "";
 
-    // WebSocket ulanishini boshlash
-    if (socket) {
-      socket.close(); // Agar avvalgi ulanish mavjud bo'lsa, yopamiz
-    }
-    const wsUrl = `http://127.0.0.1:8000/ws/bids/${id}/`;
-    socket = new WebSocket(wsUrl);
-
-    socket.onopen = () => {
-      console.log(`WebSocket ${id} ID li plita uchun ulandi`);
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("WebSocketdan kelgan xabar:", data);
-
-      if (data.type === "initial") {
-        // Dastlabki bidlarni yangilash
-        bidsList.innerHTML = "";
-        data.bids.forEach((bid) => {
-          const li = document.createElement("li");
-          li.textContent = `${new Intl.NumberFormat('uz-UZ').format(bid.amount)} so'm - Foydalanuvchi: ${bid.user_id} - ${new Date(bid.created_at).toLocaleString()}`;
-          bidsList.appendChild(li);
-        });
-      } else if (data.type === "new_bid") {
-        // Yangi bid qo'shilganda
-        const li = document.createElement("li");
-        li.textContent = `${new Intl.NumberFormat('uz-UZ').format(data.bid.amount)} so'm - Foydalanuvchi: ${data.bid.user_id} - ${new Date(data.bid.created_at).toLocaleString()}`;
-        bidsList.insertBefore(li, bidsList.firstChild); // Yangi bidni ro'yxat boshiga qo'shish
-      } else if (data.type === "bid_deleted") {
-        // Bid o'chirilganda ro'yxatni yangilash
-        showPlateDetail(id); // To'liq yangilash uchun qayta yuklaymiz
-      }
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket xatosi:", error);
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket ulanishi yopildi");
-    };
-
+    // Bid WebSocket ulanishini boshlash
+    if (bidSocket) bidSocket.close();
+    connectBidWebSocket(id);
   } catch (err) {
     console.error("Avtoraqam ma'lumotlarini yuklashda xato:", err);
   } finally {
@@ -377,7 +383,7 @@ bidForm.addEventListener("submit", async (e) => {
     bidMessage.textContent = "Taklif muvaffaqiyatli qo‘yildi!";
     bidMessage.className = "success";
     e.target["bid-amount"].value = "";
-    showPlateDetail(selectedPlateId);
+    // showPlateDetail(selectedPlateId); // WebSocket o‘zi yangilaydi, qo‘shimcha chaqiruv shart emas
   } catch (err) {
     bidMessage.textContent = err.message || "Taklif qo‘yishda xato";
     bidMessage.className = "error";
@@ -400,7 +406,7 @@ createPlateForm.addEventListener("submit", async (e) => {
     });
     createPlateError.textContent = "Avtoraqam muvaffaqiyatli qo‘shildi!";
     createPlateForm.reset();
-    loadPlates();
+    // loadPlates(); // WebSocket o‘zi yangilaydi
   } catch (err) {
     createPlateError.textContent = err.message || "Avtoraqam qo‘shishda xato";
   } finally {
@@ -420,7 +426,7 @@ updatePlateForm.addEventListener("submit", async (e) => {
       description: e.target["update-plate-description"].value,
       deadline: e.target["update-plate-deadline"].value,
     });
-    showPlateDetail(selectedPlateId);
+    showPlateDetail(selectedPlateId); // Bu yerda qo‘lda yangilash kerak, chunki bidlar WebSocket’da yangilanadi
   } catch (err) {
     staffActionError.textContent = err.message || "Avtoraqam yangilashda xato";
   } finally {
@@ -432,12 +438,12 @@ updatePlateForm.addEventListener("submit", async (e) => {
 deletePlateButton.addEventListener("click", async () => {
   if (!isStaff || !confirm("Avtoraqamni o‘chirishni xohlaysizmi?")) return;
 
-  showLoading(updateLoading); // Staff actions ichida bo'lgani uchun updateLoading ishlatiladi
+  showLoading(updateLoading);
   try {
     await apiRequest(`/plates/${selectedPlateId}/`, "DELETE");
     plateDetail.style.display = "none";
     platesSection.style.display = "grid";
-    loadPlates();
+    // loadPlates(); // WebSocket o‘zi yangilaydi
   } catch (err) {
     staffActionError.textContent = err.message || "Avtoraqam o‘chirishda xato";
   } finally {
@@ -447,6 +453,7 @@ deletePlateButton.addEventListener("click", async () => {
 
 // Orqaga qaytish
 document.getElementById("back-to-list").addEventListener("click", () => {
+  if (bidSocket) bidSocket.close(); // Bid WebSocket’ni yopish
   plateDetail.style.display = "none";
   platesSection.style.display = "grid";
   loadPlates();
@@ -496,7 +503,7 @@ showLogin.addEventListener("click", () => {
 (async function initApp() {
   header.style.display = "none";
   if (getToken()) {
-    showLoading(platesLoading); // Dastlabki yuklashda platesLoading ishlatiladi
+    showLoading(platesLoading);
     try {
       await getUserInfo();
       authSection.style.display = "none";
@@ -505,6 +512,7 @@ showLogin.addEventListener("click", () => {
       header.style.display = "flex";
       if (isStaff) staffSection.style.display = "block";
       await loadPlates();
+      connectPlatesWebSocket(); // Plitalar uchun WebSocket ulanishi
     } finally {
       hideLoading(platesLoading);
     }
