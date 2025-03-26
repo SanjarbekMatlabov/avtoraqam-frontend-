@@ -1,28 +1,35 @@
-/* Umumiy stillar */
+/* style.css */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  min-height: 100vh;
-  padding: 20px;
+  background-color: #f4f4f4;
   color: #333;
+  line-height: 1.6;
 }
 
-/* Header dizayni */
-header {
-  background: #2c3e50;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Header */
+.header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar {
@@ -30,385 +37,211 @@ header {
   gap: 10px;
 }
 
-#search-input {
-  padding: 12px;
-  width: 300px;
+.search-bar input {
+  padding: 8px;
   border: none;
-  border-radius: 25px;
-  background: #fff;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 5px;
+  width: 200px;
 }
 
-#search-input:focus {
-  outline: none;
-  width: 350px;
-  box-shadow: 0 0 10px rgba(44, 62, 80, 0.3);
-}
-
-#search-button {
-  padding: 12px 25px;
-  border: none;
-  background: #3498db;
+.search-bar button {
+  padding: 8px 16px;
+  background-color: #0056b3;
   color: white;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-#search-button:hover {
-  background: #2980b9;
-}
-
-#logout-button {
-  padding: 10px 20px;
-  background: #e74c3c;
   border: none;
-  color: white;
-  border-radius: 25px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-#logout-button:hover {
-  background: #c0392b;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Auth section dizayni */
-#auth-section {
+/* Auth Section */
+.auth-section {
   max-width: 400px;
-  margin: 0 auto;
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  margin: 50px auto;
 }
 
-h2 {
-  color: #2c3e50;
+.auth-form {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form h2 {
   margin-bottom: 20px;
   text-align: center;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-input {
-  padding: 12px;
+.auth-form input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  transition: border-color 0.3s ease;
+  border-radius: 5px;
 }
 
-input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-}
-
-button[type="submit"] {
-  padding: 12px;
-  background: #2ecc71;
-  border: none;
+.auth-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
   color: white;
-  border-radius: 8px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-button[type="submit"]:hover {
-  background: #27ae60;
+.auth-form button:hover {
+  background-color: #0056b3;
 }
 
-.error {
-  color: #e74c3c;
+.error-message {
+  color: red;
+  font-size: 14px;
   text-align: center;
-  margin-top: 10px;
 }
 
-a {
-  color: #3498db;
-  text-decoration: none;
+/* Plates Section */
+.plates-section {
+  margin: 20px 0;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-/* Plates grid dizayni (bitta row’da 3 ta plate) */
-#plates-list {
+.plates-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 0;
 }
-.plate-card {
-  background: #ffffff;
+
+/* Plate Detail */
+.plate-detail {
+  background: white;
   padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.plate-detail h2 {
+  font-size: 60px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 20px;
 }
 
-.plate-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
 }
 
-.plate-card .plate-image {
+.time-unit {
+  text-align: center;
+}
+
+.time-box {
+  display: block;
   font-size: 24px;
   font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 15px;
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.plate-card p {
-  color: #7f8c8d;
+.label {
   font-size: 14px;
-  margin-bottom: 10px;
 }
 
-.plate-card p strong {
-  color: #2c3e50;
-}
-
-.plate-card .detail-btn {
-  padding: 8px 15px;
-  background: #3498db;
-  border: none;
-  color: white;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  text-decoration: none;
-}
-
-.plate-card .detail-btn:hover {
-  background: #2980b9;
-}
-
-.no-results, .error-message {
-  text-align: center;
-  padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.no-results p, .error-message p {
-  margin: 10px 0;
-  color: #7f8c8d;
-}
-
-.error-message p:first-child {
-  color: #e74c3c;
-  font-weight: bold;
-}
-/* Plate detail dizayni */
-#plate-detail {
-  max-width: 600px;
-  margin: 20px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-#bids-list {
+.bids-list {
   list-style: none;
   margin: 20px 0;
 }
 
-#bids-list li {
+.bids-list li {
   padding: 10px;
-  background: #f8f9fa;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.bid-form {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.bid-form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  flex: 1;
+}
+
+.message {
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Staff Sections */
+.staff-section, .staff-actions {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.create-form, .update-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-form input, .update-form input {
+  padding: 10px;
+  border: 1px solid #ddd;
   border-radius: 5px;
 }
 
-#back-to-list {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #95a5a6;
-  border: none;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-#back-to-list:hover {
-  background: #7f8c8d;
-}
-
-/* Staff section dizayni */
-#staff-section, #staff-actions {
-  max-width: 600px;
-  margin: 20px auto;
-  background: #fff;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-#delete-plate-button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: #e74c3c;
-  border: none;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-#delete-plate-button:hover {
-  background: #c0392b;
-}
-@media (max-width: 1024px) {
-  #plates-list {
-      grid-template-columns: repeat(2, 1fr); 
-  }
-}
-/* Responsive dizayn */
-@media (max-width: 768px) {
-  header {
-      flex-direction: column;
-      gap: 15px;
-  }
-
-  .search-bar {
-      width: 100%;
-      flex-direction: column;
-  }
-
-  #search-input {
-      width: 100%;
-  }
-
-  #plates-list {
-    grid-template-columns: 1fr;
-}
-}
-/* Countdown soat dizayni */
-.countdown {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  text-align: center;
-}
-
-.time-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.time-box {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  font-weight: bold;
-  color: #333;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-  border: 2px solid #ededed;
-}
-
-.time-box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: rgba(86, 86, 86, 0.1);
-}
-
-.label {
-  margin-top: 10px;
-  font-size: 16px;
-  color: #555;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-@media (max-width: 480px) {
-  .time-box {
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
-  }
-  
-  .countdown-title {
-    font-size: 22px;
-  }
-  
-  .label {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 360px) {
-  .time-box {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-  }
-  
-  .countdown {
-    gap: 10px;
-  }
-}
+/* Loading Spinner */
 .loading {
   text-align: center;
-  padding: 20px;
+  color: #007bff;
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  border-top: 4px solid #007bff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
+  margin: 0 auto;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-#current-username {
-  margin-right: 10px; /* Tugma bilan masofa */
-  padding: 6px 12px; /* Ichki bo‘shliq */
-  background-color: #2980b9; /* Yashil fon (moslashtirish mumkin) */
-  color: white; /* Matn rangi */
-  font-weight: bold; /* Qalin shrift */
-  border-radius: 20px; /* Yumaloq burchaklar */
-  font-size: 14px; /* Matn o‘lchami */
-  display: inline-flex; /* Moslashuvchan joylashuv */
-  align-items: center; /* Vertikal markazlash */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Engil soya */
-  transition: all 0.3s ease; /* Hover effekti uchun silliq o‘tish */
+.plate-card {
+  transition: all 0.3s ease;
 }
 
-#current-username:hover {
-  background-color: #45a049; /* Hover’da bir oz quyuqroq rang */
-  transform: scale(1.05); /* Hover’da biroz kattalashish */
+.plate-card:hover {
+  transform: scale(1.05);
+}
+
+.bids-list li {
+  transition: all 0.3s ease;
+}
+
+.bids-list li.new {
+  background-color: #e0ffe0;
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
